@@ -91,4 +91,17 @@ class LogicTest {
       logic.createNewAlias("ddd@bbb.com", "http://d.com/laaaang_url", "short");
     }).isInstanceOf(AliasAlreadyExist.class);
   }
+
+  @Test
+  void shouldCreateNewAlias(){
+    // GIVEN
+    UrlRepositoryFakeImpl urls = new UrlRepositoryFakeImpl();
+    Logic logic = createLogic(urls);
+
+    // WHEN
+    var shortUrl = logic.createNewAlias("aaa@bbb.com", "http://g.com/loooong_url", "");
+
+    // THEN
+    assertThat(shortUrl).isNotEqualTo("");
+  }
 }
