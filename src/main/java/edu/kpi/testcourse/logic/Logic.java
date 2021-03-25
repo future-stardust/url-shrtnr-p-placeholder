@@ -1,11 +1,11 @@
 package edu.kpi.testcourse.logic;
 
-import java.util.Random;
 import edu.kpi.testcourse.entities.UrlAlias;
 import edu.kpi.testcourse.entities.User;
 import edu.kpi.testcourse.storage.UrlRepository;
 import edu.kpi.testcourse.storage.UrlRepository.AliasAlreadyExist;
 import edu.kpi.testcourse.storage.UserRepository;
+import java.util.Random;
 
 /**
  * Business logic of the URL shortener application.
