@@ -73,7 +73,7 @@ public class UserRepositoryFileImpl implements UserRepository {
   ) {
     String json = jsonTool.toJson(users);
     try {
-      Files.write(destinationFilePath, json.getBytes(StandardCharsets.UTF_8));
+      Files.writeString(destinationFilePath, json);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
