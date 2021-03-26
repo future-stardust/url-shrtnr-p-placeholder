@@ -74,8 +74,9 @@ public class UrlRepositoryFileImpl implements UrlRepository {
     return storageRoot.resolve("alias-repository.json");
   }
 
-  private static Map<String, UrlAlias> readUrlsFromJsonDatabaseFile(JsonTool jsonTool,
-    Path sourceFilePath) {
+  private static Map<String, UrlAlias> readUrlsFromJsonDatabaseFile(
+      JsonTool jsonTool, Path sourceFilePath
+  ) {
     String json;
     try {
       json = Files.readString(sourceFilePath, StandardCharsets.UTF_8);
@@ -91,11 +92,12 @@ public class UrlRepositoryFileImpl implements UrlRepository {
     return result;
   }
 
-  private static void writeUrlsToJsonDatabaseFile(JsonTool jsonTool, Map<String, UrlAlias> aliases,
-    Path destinationFilePath) {
+  private static void writeUrlsToJsonDatabaseFile(
+      JsonTool jsonTool, Map<String, UrlAlias> aliases, Path destinationFilePath
+  ) {
     String json = jsonTool.toJson(aliases);
     try {
-      Files.write(destinationFilePath, json.getBytes(StandardCharsets.UTF_8));
+      Files.writeString(destinationFilePath, json);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
