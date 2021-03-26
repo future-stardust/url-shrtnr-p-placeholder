@@ -10,18 +10,17 @@ import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import jdk.jshell.spi.ExecutionControl.NotImplementedException;
 
 /**
  * A file-backed implementation of {@link UrlRepository} suitable for use in production.
  */
-public class UrlRepositoryFileImpl implements UrlRepository{
+public class UrlRepositoryFileImpl implements UrlRepository {
+
   // UrlAliases, keyed by aliases.
   private final Map<String, UrlAlias> aliases;
 
@@ -35,7 +34,8 @@ public class UrlRepositoryFileImpl implements UrlRepository{
   public UrlRepositoryFileImpl(JsonTool jsonTool, UrlShortenerConfig appConfig) {
     this.jsonTool = jsonTool;
     this.appConfig = appConfig;
-    this.aliases = readAliasesFromJsonDatabaseFile(jsonTool, makeJsonFilePath(appConfig.storageRoot()));
+    this.aliases = readUrlsFromJsonDatabaseFile(jsonTool,
+      makeJsonFilePath(appConfig.storageRoot()));
   }
 
   @Override
@@ -45,7 +45,7 @@ public class UrlRepositoryFileImpl implements UrlRepository{
     }
 
     aliases.put(urlAlias.alias(), urlAlias);
-    writeAliasesToJsonDatabaseFile(jsonTool, aliases, makeJsonFilePath(appConfig.storageRoot()));
+    writeUrlsToJsonDatabaseFile(jsonTool, aliases, makeJsonFilePath(appConfig.storageRoot()));
   }
 
   @Nullable
@@ -59,9 +59,8 @@ public class UrlRepositoryFileImpl implements UrlRepository{
     UrlAlias savedAlias = aliases.get(alias);
     if (savedAlias != null && savedAlias.email().equals(email)) {
       aliases.remove(alias);
-      writeAliasesToJsonDatabaseFile(jsonTool, aliases, makeJsonFilePath(appConfig.storageRoot()));
-    }
-    else {
+      writeUrlsToJsonDatabaseFile(jsonTool, aliases, makeJsonFilePath(appConfig.storageRoot()));
+    } else {
       throw new PermissionDenied();
     }
   }
@@ -76,7 +75,7 @@ public class UrlRepositoryFileImpl implements UrlRepository{
     return storageRoot.resolve("alias-repository.json");
   }
 
-  private static Map<String, UrlAlias> readAliasesFromJsonDatabaseFile(
+  private static Map<String, UrlAlias> readUrlsFromJsonDatabaseFile(
     JsonTool jsonTool, Path sourceFilePath
   ) {
     String json;
@@ -85,7 +84,7 @@ public class UrlRepositoryFileImpl implements UrlRepository{
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
-    Type type = new TypeToken<HashMap<String, UrlAlias>>(){}.getType();
+    Type type = new TypeToken<HashMap<String, UrlAlias>>() {}.getType();
     Map<String, UrlAlias> result = jsonTool.fromJson(json, type);
     if (result == null) {
       throw new RuntimeException("Could not deserialize the aliases repository");
@@ -93,12 +92,12 @@ public class UrlRepositoryFileImpl implements UrlRepository{
     return result;
   }
 
-  private static void writeAliasesToJsonDatabaseFile(
+  private static void writeUrlsToJsonDatabaseFile(
     JsonTool jsonTool, Map<String, UrlAlias> aliases, Path destinationFilePath
   ) {
     String json = jsonTool.toJson(aliases);
     try {
-      Files.writeString(destinationFilePath, json);
+      Files.write(destinationFilePath, json.getBytes(StandardCharsets.UTF_8));
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

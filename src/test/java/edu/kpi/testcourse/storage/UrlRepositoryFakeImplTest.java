@@ -33,7 +33,8 @@ class UrlRepositoryFakeImplTest {
 
     //THEN
     UrlAlias alias2 = new UrlAlias("http://r.com/short", "http://g.com/long2", "aaa@bbb.com");
-    assertThatThrownBy(() -> {
+    assertThatThrownBy(
+      () -> {
       repo.createUrlAlias(alias2);
     }).isInstanceOf(UrlRepository.AliasAlreadyExist.class);
   }
