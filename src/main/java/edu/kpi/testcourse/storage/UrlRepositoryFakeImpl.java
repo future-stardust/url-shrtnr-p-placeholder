@@ -9,6 +9,7 @@ import javax.annotation.Nullable;
  * An in-memory fake implementation of {@link UrlRepository}.
  */
 public class UrlRepositoryFakeImpl implements UrlRepository {
+
   private final HashMap<String, UrlAlias> aliases = new HashMap<>();
 
   @Override
@@ -21,7 +22,8 @@ public class UrlRepositoryFakeImpl implements UrlRepository {
   }
 
   @Override
-  public @Nullable UrlAlias findUrlAlias(String alias) {
+  public @Nullable
+  UrlAlias findUrlAlias(String alias) {
     return aliases.get(alias);
   }
 
@@ -29,8 +31,7 @@ public class UrlRepositoryFakeImpl implements UrlRepository {
   public void deleteUrlAlias(String email, String alias) {
     if (aliases.get(alias).email().equals(email)) {
       aliases.remove(alias);
-    }
-    else {
+    } else {
       throw new PermissionDenied();
     }
   }

@@ -51,4 +51,21 @@ class UrlRepositoryFakeImplTest {
     repo.deleteUrlAlias("aaa@bbb.com", "http://r.com/short");
     assertThat(repo.findUrlAlias("http://r.com/short")).isNull();
   }
+
+  @Test
+  void shouldNotDeleteUserAlias() {
+    // GIVEN
+    UrlRepository repo = new UrlRepositoryFakeImpl();
+
+    // WHEN
+    UrlAlias alias = new UrlAlias("http://r.com/short", "http://g.com/long", "aaa@bbb.com");
+    repo.createUrlAlias(alias);
+
+    // THEN
+    assertThatThrownBy(() -> {
+      repo.deleteUrlAlias("bbb@ccc.com", "http://r.com/short");
+    })
+      .isInstanceOf(UrlRepository.PermissionDenied.class);
+  }
+
 }
