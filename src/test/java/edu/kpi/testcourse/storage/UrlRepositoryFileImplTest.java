@@ -8,6 +8,7 @@ import edu.kpi.testcourse.logic.UrlShortenerConfig;
 import edu.kpi.testcourse.serialization.JsonToolJacksonImpl;
 import java.io.IOException;
 import java.nio.file.Files;
+import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,4 +52,45 @@ public class UrlRepositoryFileImplTest {
     assertThat(urlRepository.findUrlAlias("http://r.com/short")).isEqualTo(alias);
   }
 
+
+  @Test
+  void shouldNotAllowToCreateSameAliases() {
+
+    //WHEN
+    UrlAlias alias1 = new UrlAlias("http://r.com/short", "http://g.com/long1", "aaa@bbb.com");
+    urlRepository.createUrlAlias(alias1);
+
+    //THEN
+    UrlAlias alias2 = new UrlAlias("http://r.com/short", "http://g.com/long2", "aaa@bbb.com");
+    assertThatThrownBy(
+      () -> {
+        urlRepository.createUrlAlias(alias2);
+      }).isInstanceOf(UrlRepository.AliasAlreadyExist.class);
+  }
+
+  @Test
+  void shouldDeleteUserAlias() {
+
+    // WHEN
+    UrlAlias alias = new UrlAlias("http://r.com/short", "http://g.com/long", "aaa@bbb.com");
+    urlRepository.createUrlAlias(alias);
+
+    // THEN
+    urlRepository.deleteUrlAlias("aaa@bbb.com", "http://r.com/short");
+    AssertionsForClassTypes.assertThat(urlRepository.findUrlAlias("http://r.com/short")).isNull();
+  }
+
+  @Test
+  void shouldNotDeleteUserAlias() {
+
+    // WHEN
+    UrlAlias alias = new UrlAlias("http://r.com/short", "http://g.com/long", "aaa@bbb.com");
+    urlRepository.createUrlAlias(alias);
+
+    // THEN
+    assertThatThrownBy(() -> {
+      urlRepository.deleteUrlAlias("bbb@ccc.com", "http://r.com/short");
+    })
+      .isInstanceOf(UrlRepository.PermissionDenied.class);
+  }
 }
