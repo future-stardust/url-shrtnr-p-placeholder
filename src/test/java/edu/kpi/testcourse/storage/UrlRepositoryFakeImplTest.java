@@ -38,5 +38,17 @@ class UrlRepositoryFakeImplTest {
     }).isInstanceOf(UrlRepository.AliasAlreadyExist.class);
   }
 
+  @Test
+  void shouldDeleteUserAlias() {
+    // GIVEN
+    UrlRepository repo = new UrlRepositoryFakeImpl();
 
+    // WHEN
+    UrlAlias alias = new UrlAlias("http://r.com/short", "http://g.com/long", "aaa@bbb.com");
+    repo.createUrlAlias(alias);
+
+    // THEN
+    repo.deleteUrlAlias("aaa@bbb.com", "http://r.com/short");
+    assertThat(repo.findUrlAlias("http://r.com/short")).isNull();
+  }
 }

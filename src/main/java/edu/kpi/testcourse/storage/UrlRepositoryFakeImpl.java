@@ -27,8 +27,12 @@ public class UrlRepositoryFakeImpl implements UrlRepository {
 
   @Override
   public void deleteUrlAlias(String email, String alias) {
-    // TODO: We should implement it
-    throw new UnsupportedOperationException();
+    if (aliases.get(alias).email().equals(email)) {
+      aliases.remove(alias);
+    }
+    else {
+      throw new PermissionDenied();
+    }
   }
 
   @Override
